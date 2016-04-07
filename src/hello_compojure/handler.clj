@@ -10,6 +10,7 @@
   (GET "/:view-name" [view-name :as {params :params}] 
     (view/render 
       (ns-resolve 'hello-compojure.view (symbol view-name)) [params]))
+  (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app
