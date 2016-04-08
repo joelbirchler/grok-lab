@@ -21,4 +21,5 @@ Fire up the server:
 
 ## License
 
+This project is under the MIT license.
 Copyright © 2016 Joel Birchler.
