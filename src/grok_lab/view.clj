@@ -13,7 +13,9 @@
     [:body content]]))
 
 (defn index []
-  [:h2 "wat"])
+  [:main
+    [:div#content]
+    [:script "grok_lab.core.main()"]])
 
 (defn render
   ([content-fn params]
