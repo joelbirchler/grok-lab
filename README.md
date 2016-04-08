@@ -1,19 +1,24 @@
-# hello-compojure
+# Grok Lab
 
-FIXME
+Grok Lab is a learning platform for live demo and experimentation of code.
 
-## Prerequisites
 
-You will need [Leiningen][] 2.0.0 or above installed.
+## Building
 
-[leiningen]: https://github.com/technomancy/leiningen
+Build ClojureScript with:
+
+    $ lein cljsbuild once
+    (or)
+    $ lein cljsbuild auto
+
 
 ## Running
 
-To start a web server for the application, run:
+Fire up the server:
 
-    lein ring server
+    $ lein ring server
+
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 Joel Birchler.
