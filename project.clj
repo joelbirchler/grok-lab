@@ -13,9 +13,10 @@
   :ring {:handler grok-lab.routes/app}
   :cljsbuild {
     :builds [{:source-paths ["src-cljs"]
-              :compiler {:output-to "resources/public/js/main.js"
-                         :optimizations :whitespace
-                         :pretty-print true}}]}
+              :compiler {:output-to "resources/public/compiled-js/main.js"
+                         :output-dir "resources/public/compiled-js/"
+                         :optimizations :simple
+                         :source-map "resources/public/compiled-js/main.js.map"}}]}
   :profiles {:dev
     {:dependencies [[javax.servlet/servlet-api "2.5"]
                     [ring/ring-mock "0.3.0"]]}})

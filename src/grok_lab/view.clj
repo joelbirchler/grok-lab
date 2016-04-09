@@ -8,7 +8,7 @@
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
       [:title "Hello"]
-      (include-js "/js/main.js")
+      (include-js "/compiled-js/main.js")
       (include-css "http://yui.yahooapis.com/pure/0.6.0/pure-min.css")]
     [:body content]]))
 

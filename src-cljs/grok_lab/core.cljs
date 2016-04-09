@@ -3,6 +3,7 @@
             [grok_lab.eval :as eval]))
 
 ;; TODO: Make sure we terminate reasonably (handle errors, hangs, etc)
+;; TODO: Term any existing running workers on run, set/reset a terminate timer
 ;; TODO: Think about __watch__(uid, code) wrappers
 
 (defonce code (r/atom "println('cats!!'); println(2 + 2);"))
