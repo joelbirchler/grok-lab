@@ -2,7 +2,6 @@
   (:require [reagent.core :as r]
             [grok_lab.eval :as eval]))
 
-;; TODO: Make sure we terminate reasonably (handle errors, hangs, etc)
 ;; TODO: Term any existing running workers on run, set/reset a terminate timer
 ;; TODO: Think about __watch__(uid, code) wrappers
 
@@ -16,10 +15,13 @@
 (defn on-log [value]
   (swap! log conj value))
 
+(defn on-error [{message :message line :line col :col}]
+  (on-log (str "ERROR! " message " at line " line " column " col)))
+
 (defn awesome-ide []
   [:div
     (textarea code)
-    [:button {:type "submit" :on-click #(eval/run @code on-log)} "Run"]
+    [:button {:type "submit" :on-click #(eval/run @code on-log on-error)} "Run"]
     [:pre (clojure.string/join "\n" @log)]])
 
 (defn ^:export main []
