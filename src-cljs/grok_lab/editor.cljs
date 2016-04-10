@@ -12,7 +12,9 @@
              ace-editor (.edit js/ace node)]
 
          (doto ace-editor
-           (.setTheme "ace/theme/tomorrow_night"))
+           (aset "$blockScrolling" js/Infinity) ; hides deprecation warning
+           (.setTheme "ace/theme/tomorrow_night")
+           (.setValue @content))
 
          (doto (.getSession ace-editor)
            (.on "change" #(on-change (.getValue ace-editor)))
@@ -20,4 +22,4 @@
 
       :reagent-render
       (fn [mode content]
-        [:div#editor {:style {:font-size "18px !important"}} @content])})))
+        [:div#editor {:style {:font-size "18px !important"}}])})))
