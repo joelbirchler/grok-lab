@@ -2,6 +2,15 @@
 
 Grok Lab is a learning platform for live demo and experimentation of code.
 
+## TODO
+
+- Get the layout and layout switching into a better state
+- Execute on load
+- Terminate any existing running workers on run, set/reset a terminate timer
+- Improve editor integration (with errors, etc)
+- Think about __watch__(uid, code) wrappers
+- Load lodash by default
+
 
 ## Building
 

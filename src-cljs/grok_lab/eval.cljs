@@ -1,5 +1,6 @@
 (ns grok_lab.eval)
 
+
 (defn bootstrapped-code [code]
   (str
     "const println = postMessage;"

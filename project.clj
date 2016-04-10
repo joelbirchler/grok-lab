@@ -15,8 +15,8 @@
     :builds [{:source-paths ["src-cljs"]
               :compiler {:output-to "resources/public/compiled-js/main.js"
                          :output-dir "resources/public/compiled-js/"
-                         :optimizations :simple
-                         :source-map "resources/public/compiled-js/main.js.map"}}]}
+                         :source-map "resources/public/compiled-js/main.js.map"
+                         :optimizations :whitespace}}]}
   :profiles {:dev
     {:dependencies [[javax.servlet/servlet-api "2.5"]
                     [ring/ring-mock "0.3.0"]]}})

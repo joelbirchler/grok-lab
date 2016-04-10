@@ -8,12 +8,14 @@
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
       [:title "Hello"]
+      (include-js "https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js")
       (include-js "/compiled-js/main.js")
-      (include-css "http://yui.yahooapis.com/pure/0.6.0/pure-min.css")]
-    [:body content]]))
+      (include-css "https://cdnjs.cloudflare.com/ajax/libs/normalize/4.0.0/normalize.min.css")]
+      (include-css "/css/style.css")
+    content]))
 
 (defn index []
-  [:main
+  [:body
     [:div#content]
     [:script "grok_lab.core.main()"]])
 
