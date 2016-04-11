@@ -13,6 +13,9 @@
 (defn on-error [{message :message line :line col :col}]
   (on-log (str "ERROR! " message " at line " line " column " col)))
 
+(defn run-code []
+  (eval/run @code on-log on-error))
+
 (defn grok-pad []
   [:main
     [:div.left-pane
@@ -20,9 +23,10 @@
     [:div.right-pane
       [editor/editor :javascript code]
       [:div#console.stack-1-3
-        [:button {:type "submit" :on-click #(eval/run @code on-log on-error)} "Run"]
+        [:button {:type "submit" :on-click run-code} "Run"]
         [:pre (clojure.string/join "\n" @log)]]]])
 
 (defn ^:export main []
   (r/render [grok-pad]
-    (js/document.getElementById "content")))
+    (js/document.getElementById "content"))
+  (run-code))
