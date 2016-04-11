@@ -15,11 +15,13 @@
 
 (defn grok-pad []
   [:main
-    [:section.left-pane
-      [editor/editor :javascript code]]
-    [:section#slide.right-pane
-      [:button {:type "submit" :on-click #(eval/run @code on-log on-error)} "Run"]
-      [:pre (clojure.string/join "\n" @log)]]])
+    [:div.left-pane
+      [:div#slide.fill "Slide"]]
+    [:div.right-pane
+      [editor/editor :javascript code]
+      [:div#console.stack-1-3
+        [:button {:type "submit" :on-click #(eval/run @code on-log on-error)} "Run"]
+        [:pre (clojure.string/join "\n" @log)]]]])
 
 (defn ^:export main []
   (r/render [grok-pad]

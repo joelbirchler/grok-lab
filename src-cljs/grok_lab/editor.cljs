@@ -22,4 +22,4 @@
 
       :reagent-render
       (fn [mode content]
-        [:div#editor {:style {:font-size "18px !important"}}])})))
+        [:div#editor.stack-2-3 {:style {:font-size "18px !important"}}])})))
