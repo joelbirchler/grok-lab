@@ -4,6 +4,7 @@
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.8.40"]
+                 [markdown-clj "0.9.87"]
                  [reagent "0.6.0-alpha"]
                  [compojure "1.4.0"]
                  [ring/ring-defaults "0.1.5"]

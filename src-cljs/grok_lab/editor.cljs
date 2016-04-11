@@ -14,7 +14,7 @@
          (doto ace-editor
            (aset "$blockScrolling" js/Infinity) ; hides deprecation warning
            (.setTheme "ace/theme/tomorrow_night")
-           (.setValue @content))
+           (.setValue @content -1))
 
          (doto (.getSession ace-editor)
            (.on "change" #(on-change (.getValue ace-editor)))
