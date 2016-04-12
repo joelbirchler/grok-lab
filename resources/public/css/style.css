@@ -43,14 +43,25 @@ main {
   color: #ccc;
   box-sizing: border-box;
   padding: 20px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#console pre {
+  white-space: pre-wrap;
 }
 
 #slide {
   font-family: 'PT Sans', sans-serif;
-  font-weight: 700;
+  font-weight: 400;
   font-size: 48px;
   background-color: #60BFBF;
   box-sizing: border-box;
   padding: 20px;
   border-right: 3px solid #509f9f;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
+
+#slide i, #slide b, #slide em, #slide strong, #slide h1 { color: white; }
+#slide h1 { margin: 0 0 0.3em 0; }
