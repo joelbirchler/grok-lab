@@ -1,7 +1,7 @@
 (ns grok_lab.core
   (:require [reagent.core :as r]
-            [markdown.core :as markdown]
-            [grok_lab.editor :as editor]
+            [grok_lab.editor :as editor :refer [editor]]
+            [grok_lab.slide :refer [slide]]
             [grok_lab.eval :as eval]))
 
 
@@ -18,7 +18,9 @@ const graduates = cats.map(school);
 println(graduates.join(\", \"));
 "))
 
-(defonce text (r/atom "
+(defonce watch-range (r/atom [8 8 8 28]))
+
+(defonce slide-md (r/atom "
 # Markdown Text Here
 We only want educated cats, so we're going to _map_ over all of our cats and
 _apply school_ to each one. This will give us a _new cat_, leaving the original
@@ -30,7 +32,6 @@ Probably want a better description of map and parallelization here.
 "))
 
 (defonce log (r/atom '()))
-
 
 (defn on-log [value]
   (swap! log conj value))
@@ -44,12 +45,10 @@ Probably want a better description of map and parallelization here.
 (defn grok-pad []
   [:main
     [:div.left-pane
-      [:div#slide.fill
-        {:dangerouslySetInnerHTML
-          {:__html (markdown/md->html @text)}}]]
+      [slide @slide-md]]
 
     [:div.right-pane
-      [editor/editor :javascript code]
+      [editor :javascript code watch-range]
       [:div#console.stack-1-3
         [:button {:type "submit" :on-click run-code} "Run"]
         [:pre (clojure.string/join "\n" @log)]]]])
