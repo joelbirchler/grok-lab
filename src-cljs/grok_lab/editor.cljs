@@ -2,6 +2,13 @@
   (:require [reagent.core :as r]
             [cljs.pprint :refer [pprint]]))
 
+;;
+;; The Ace Editor wasn't designed with functional purity in mind :)... so wrapping
+;; Reagent around it in Clojure is a bit of a trick. There are some unpure functions
+;; in here.
+;;
+
+
 (enable-console-print!)
 
 (defonce ace-range-constructor
@@ -17,18 +24,35 @@
         end-sel (.-end selection-obj)]
     [(.-row start-sel) (.-column start-sel) (.-row end-sel) (.-column end-sel)]))
 
-(defn render-ace-marker [marker-range]
+(defn get-watch-marker-ids []
+  "Get a list of watch markers from the Ace getMarkers non-Array"
+  (let [session (.getSession (ace-editor))
+        markers (js->clj (.getMarkers session) :keywordize-keys true)]
+    (reduce
+      (fn [ids [key marker]]
+        (if (= (:clazz marker) "watch-marker")
+          (conj ids (:id marker))
+          ids))
+       [] markers)))
+
+(defn remove-watch-markers []
+  "Removes all watch markers from the editor"
+  (let [session (.getSession (ace-editor))]
+    (doseq [marker-id (get-watch-marker-ids)]
+      (.removeMarker session marker-id))))
+
+(defn render-watch-marker [marker-range]
   "Clears and redraws marker (note: ace must be rendered)"
   (let [session (.getSession (ace-editor))
         doc (.getDocument session)
+        current-markers (js->clj (.getMarkers session))
         start-anchor (.createAnchor doc (marker-range 0) (marker-range 1))
         end-anchor (.createAnchor doc (marker-range 2) (marker-range 3))
         range (ace-range-constructor.)]
+    (remove-watch-markers)
     (set! (.-start range) start-anchor)
     (set! (.-end range) end-anchor)
     (.addMarker session range "watch-marker" "text")))
-
-;; This might be helpful: https://github.com/tlatoza/SeeCodeRun/wiki/Ace-code-editor
 
 (defn editor [mode content watch-range]
   "React wrapper for Ace"
@@ -50,11 +74,11 @@
            (.on "change" #(on-change (.getValue (ace-editor))))
            (.setMode "ace/mode/javascript"))
 
-         (render-ace-marker @watch-range)))
+         (render-watch-marker @watch-range)))
 
       :component-did-update
       (fn [this old-props old-children]
-        (render-ace-marker @watch-range))
+        (render-watch-marker @watch-range))
 
       :reagent-render
       (fn [mode content watch-range]
