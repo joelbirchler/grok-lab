@@ -7,11 +7,6 @@
 (defonce ace-range-constructor
   (.-Range (.require js/ace "ace/range")))
 
-;; TODO: Remove?
-(defn ace-range [row-start col-start row-end col-end]
-  "Creates a new Ace range."
-  (ace-range-constructor. row-start col-start row-end col-end))
-
 (defn ace-editor []
   (.edit js/ace "editor"))
 
@@ -22,8 +17,8 @@
         end-sel (.-end selection-obj)]
     [(.-row start-sel) (.-column start-sel) (.-row end-sel) (.-column end-sel)]))
 
-(defn render-ace-markers [marker-range]
-  "Clears and redraws markers (note: ace must be rendered)"
+(defn render-ace-marker [marker-range]
+  "Clears and redraws marker (note: ace must be rendered)"
   (let [session (.getSession (ace-editor))
         doc (.getDocument session)
         start-anchor (.createAnchor doc (marker-range 0) (marker-range 1))
@@ -55,11 +50,11 @@
            (.on "change" #(on-change (.getValue (ace-editor))))
            (.setMode "ace/mode/javascript"))
 
-         (render-ace-markers @watch-range)))
+         (render-ace-marker @watch-range)))
 
       :component-did-update
       (fn [this old-props old-children]
-        (render-ace-markers @watch-range))
+        (render-ace-marker @watch-range))
 
       :reagent-render
       (fn [mode content watch-range]

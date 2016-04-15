@@ -6,8 +6,6 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 
 - Watching
   - Highlight then alt+w or click watch adds/removes a marker for watching
-    - event should tell core to set the watch range (r/atom), then this will trigger a marker
-    - anchor: https://groups.google.com/forum/#!topic/ace-discuss/WsL-ZATvKQQ
   - Add __watch__(uid, code) wrappers
   - Watches list in console area (maybe console stack?)
 - Termination and errors
