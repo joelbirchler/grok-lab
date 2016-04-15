@@ -2,11 +2,12 @@
   (:require [reagent.core :as r]
             [cljs.pprint :refer [pprint]]))
 
- (enable-console-print!)
+(enable-console-print!)
 
 (defonce ace-range-constructor
   (.-Range (.require js/ace "ace/range")))
 
+;; TODO: Remove?
 (defn ace-range [row-start col-start row-end col-end]
   "Creates a new Ace range."
   (ace-range-constructor. row-start col-start row-end col-end))
@@ -23,18 +24,16 @@
 
 (defn render-ace-markers [marker-range]
   "Clears and redraws markers (note: ace must be rendered)"
-  (let [session (.getSession (ace-editor))]
-    (pprint "hot")
-    (.addMarker session
-      (apply ace-range marker-range) "watch-marker" "text")))
+  (let [session (.getSession (ace-editor))
+        doc (.getDocument session)
+        start-anchor (.createAnchor doc (marker-range 0) (marker-range 1))
+        end-anchor (.createAnchor doc (marker-range 2) (marker-range 3))
+        range (ace-range-constructor.)]
+    (set! (.-start range) start-anchor)
+    (set! (.-end range) end-anchor)
+    (.addMarker session range "watch-marker" "text")))
 
-;;
-;; Ace notes for the horribly undocumented road ahead:
-;;   editor.getSelectionRange() for the current selected range
-;;   editor.session.getTextRange(range) should give us the text in the range (for watch)
-;;
-
-
+;; This might be helpful: https://github.com/tlatoza/SeeCodeRun/wiki/Ace-code-editor
 
 (defn editor [mode content watch-range]
   "React wrapper for Ace"
@@ -53,7 +52,7 @@
            (.setValue @content -1))
 
          (doto session
-           (.on "change" #(on-change (.getValue ace-editor)))
+           (.on "change" #(on-change (.getValue (ace-editor))))
            (.setMode "ace/mode/javascript"))
 
          (render-ace-markers @watch-range)))
