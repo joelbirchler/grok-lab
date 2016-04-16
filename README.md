@@ -5,7 +5,6 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 ## TODO
 
 - Watching
-  - Highlight then alt+w or click watch adds/removes a marker for watching
   - Add __watch__(uid, code) wrappers
   - Watches list in console area (maybe console stack?)
 - Termination and errors

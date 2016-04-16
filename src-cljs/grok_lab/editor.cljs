@@ -57,13 +57,15 @@
 (defn editor [mode content watch-range]
   "React wrapper for Ace"
   (let [on-change    #(reset! content %)
-        on-set-watch #(reset! watch-range %)]
+        on-set-watch #(reset! watch-range %)
+        set-watch-on-selection #(on-set-watch (ace-selected-range)) ]
 
     (r/create-class
       {:component-did-mount
       (fn [this]
        (let [ace (ace-editor)
-             session (.getSession ace)]
+             session (.getSession ace)
+             commands (.-commands ace)]
 
          (doto ace
            (aset "$blockScrolling" js/Infinity) ; hides deprecation warning
@@ -73,6 +75,12 @@
          (doto session
            (.on "change" #(on-change (.getValue (ace-editor))))
            (.setMode "ace/mode/javascript"))
+
+         (doto commands
+           (.addCommand (clj->js {
+             :name "setWatchOnSelection"
+             :bindKey {:win "Ctrl-w" :mac "Ctrl-w"}
+             :exec set-watch-on-selection})))
 
          (render-watch-marker @watch-range)))
 
@@ -85,5 +93,5 @@
         (do
           (deref watch-range) ; hacking non-React into React -- deref forces rerender on change
           [:div.stack-2-3
-            [:button.watch-button {:type "submit" :on-click #(on-set-watch (ace-selected-range))} "Watch"]
+            [:button.watch-button {:type "submit" :on-click set-watch-on-selection} "Watch"]
             [:div#editor]]))})))
