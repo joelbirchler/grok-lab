@@ -48,6 +48,7 @@ main {
   position: absolute;
   z-index: 200;
   background-color: #343436;
+  border: 1px #60BFBF dashed;
   border-bottom: 2px #60BFBF solid;
 }
 
