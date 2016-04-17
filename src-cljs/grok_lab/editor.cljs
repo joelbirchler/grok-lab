@@ -8,14 +8,22 @@
 ;; in here.
 ;;
 
-
 (enable-console-print!)
 
 (defonce ace-range-constructor
   (.-Range (.require js/ace "ace/range")))
 
-(defn ace-editor []
-  (.edit js/ace "editor"))
+(def ace-editor
+  (memoize
+    #(.edit js/ace "editor")))
+
+(def ace-session
+  (memoize
+    #(.getSession (ace-editor))))
+
+(def ace-document
+  (memoize
+    #(.getDocument (.getSession (ace-editor)))))
 
 (defn ace-selected-range []
   "Grab the selected range from Ace (note: ace must be rendered)"
@@ -26,8 +34,7 @@
 
 (defn get-watch-marker-ids []
   "Get a list of watch markers from the Ace getMarkers non-Array"
-  (let [session (.getSession (ace-editor))
-        markers (js->clj (.getMarkers session) :keywordize-keys true)]
+  (let [markers (js->clj (.getMarkers (ace-session)) :keywordize-keys true)]
     (reduce
       (fn [ids [key marker]]
         (if (= (:clazz marker) "watch-marker")
@@ -37,22 +44,38 @@
 
 (defn remove-watch-markers []
   "Removes all watch markers from the editor"
-  (let [session (.getSession (ace-editor))]
-    (doseq [marker-id (get-watch-marker-ids)]
-      (.removeMarker session marker-id))))
+  (doseq [marker-id (get-watch-marker-ids)]
+    (.removeMarker (ace-session) marker-id)))
 
-(defn render-watch-marker [marker-range]
-  "Clears and redraws marker (note: ace must be rendered)"
-  (let [session (.getSession (ace-editor))
-        doc (.getDocument session)
-        current-markers (js->clj (.getMarkers session))
-        start-anchor (.createAnchor doc (marker-range 0) (marker-range 1))
-        end-anchor (.createAnchor doc (marker-range 2) (marker-range 3))
-        range (ace-range-constructor.)]
-    (remove-watch-markers)
+(defn create-anchor [row column]
+  (.createAnchor (ace-document) row column))
+
+(defn anchors->range [start-anchor end-anchor]
+  (let [range (ace-range-constructor.)]
     (set! (.-start range) start-anchor)
     (set! (.-end range) end-anchor)
-    (.addMarker session range "watch-marker" "text")))
+    range))
+
+(defn render-watch-marker [[start-row start-col end-row end-col]]
+  "Clears and redraws marker (note: ace must be rendered)"
+  (let [start-anchor (create-anchor start-row start-col)
+        end-anchor (create-anchor end-row end-col)
+        range (anchors->range start-anchor end-anchor)]
+    (remove-watch-markers)
+    (.addMarker (ace-session) range "watch-marker" "text")
+    (pprint
+      (.positionToIndex (ace-document)
+        (clj->js {:row start-row :column start-col})))))
+
+;;
+;; TODO: Code stuff should probably be elsewhere with eval in the code module?
+;;
+;; HA! Use ed.sessions.doc.positionToIndex({row, column})
+;; If this works, we may want to store the watch marker this way and translate back and forth.
+;; So core will have the text-based knowledge and the editor will have the marker and position nonsense.
+
+
+
 
 (defn editor [mode content watch-range]
   "React wrapper for Ace"
@@ -63,26 +86,22 @@
     (r/create-class
       {:component-did-mount
       (fn [this]
-       (let [ace (ace-editor)
-             session (.getSession ace)
-             commands (.-commands ace)]
+       (doto (ace-editor)
+         (aset "$blockScrolling" js/Infinity) ; hides deprecation warning
+         (.setTheme "ace/theme/tomorrow_night")
+         (.setValue @content -1))
 
-         (doto ace
-           (aset "$blockScrolling" js/Infinity) ; hides deprecation warning
-           (.setTheme "ace/theme/tomorrow_night")
-           (.setValue @content -1))
+       (doto (ace-session)
+         (.on "change" #(on-change (.getValue (ace-editor))))
+         (.setMode "ace/mode/javascript"))
 
-         (doto session
-           (.on "change" #(on-change (.getValue (ace-editor))))
-           (.setMode "ace/mode/javascript"))
+       (doto (.-commands (ace-editor))
+         (.addCommand (clj->js {
+           :name "setWatchOnSelection"
+           :bindKey {:win "Ctrl-w" :mac "Ctrl-w"}
+           :exec set-watch-on-selection})))
 
-         (doto commands
-           (.addCommand (clj->js {
-             :name "setWatchOnSelection"
-             :bindKey {:win "Ctrl-w" :mac "Ctrl-w"}
-             :exec set-watch-on-selection})))
-
-         (render-watch-marker @watch-range)))
+       (render-watch-marker @watch-range))
 
       :component-did-update
       (fn [this old-props old-children]

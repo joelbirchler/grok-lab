@@ -18,7 +18,6 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 Build ClojureScript with:
 
     $ lein cljsbuild once
-    (or)
     $ lein cljsbuild auto
 
 

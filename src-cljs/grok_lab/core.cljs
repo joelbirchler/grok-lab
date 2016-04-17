@@ -4,8 +4,10 @@
             [grok_lab.slide :refer [slide]]
             [grok_lab.eval :as eval]))
 
-
+;;
 ;; TODO: We're going to move this data to a db. Ignore the mess for now.
+;;
+
 (defonce code (r/atom
   "const cats = [\"Babou\",
               \"Gilbert The Destroyer\",

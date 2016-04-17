@@ -4,6 +4,7 @@
 (defn bootstrapped-code [code]
   (str
     "const println = postMessage;"
+    "const __grok_watch__ = function(result) { println(result); return result; };"
     code))
 
 (defn create-eval-worker [code]
