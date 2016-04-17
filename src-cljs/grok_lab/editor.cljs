@@ -42,20 +42,20 @@
   (let [selection-obj (.getSelectionRange (ace-editor))]
     (map js-position->index [(.-start selection-obj) (.-end selection-obj)])))
 
-(defn get-watch-marker-ids []
-  "Get a list of watch markers from the Ace getMarkers non-Array"
-  (let [markers (js->clj (.getMarkers (ace-session)) :keywordize-keys true)]
-    (reduce
-      (fn [ids [key marker]]
-        (if (= (:clazz marker) "watch-marker")
-          (conj ids (:id marker))
-          ids))
-       [] markers)))
+(defn get-markers []
+  "Get a list of markers from Ace (which sends it as an Array-like object)"
+  (map
+    (fn [[key marker]] marker)
+    (js->clj (.getMarkers (ace-session)) :keywordize-keys true)))
 
-(defn remove-watch-markers []
-  "Removes all watch markers from the editor"
-  (doseq [marker-id (get-watch-marker-ids)]
-    (.removeMarker (ace-session) marker-id)))
+(defn get-watch-marker []
+  (first (filter
+    #(= "watch-marker" (:clazz %))
+    (get-markers))))
+
+(defn get-watch-index-range []
+  (let [range (:range (get-watch-marker))]
+    (map js-position->index [(.-start range) (.-end range)])))
 
 (defn create-anchor [row column]
   (.createAnchor (ace-document) row column))
@@ -71,12 +71,14 @@
   (let [start-anchor (apply create-anchor (index->vec-position start-index))
         end-anchor (apply create-anchor (index->vec-position end-index))
         range (anchors->ace-range start-anchor end-anchor)]
-    (remove-watch-markers)
+    (.removeMarker (ace-session) (:id (get-watch-marker)))
     (.addMarker (ace-session) range "watch-marker" "text")))
 
 (defn editor [mode content watch-range]
   "React wrapper for Ace"
-  (let [on-change #(reset! content %)
+  (let [on-change (fn [updated-content]
+          (reset! watch-range (get-watch-index-range))
+          (reset! content updated-content))
         set-watch-on-selection #(reset! watch-range (ace-selected-index-range)) ]
 
     (r/create-class

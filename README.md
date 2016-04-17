@@ -5,7 +5,6 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 ## TODO
 
 - Watching
-  - watch-range should update on change
   - Use js splice to insert the wrapper
   - Watch displays in console area, constantly updates
   - Run/watch tabs?
