@@ -10,9 +10,6 @@
 
 (enable-console-print!)
 
-(defonce ace-range-constructor
-  (.-Range (.require js/ace "ace/range")))
-
 (def ace-editor
   (memoize
     #(.edit js/ace "editor")))
@@ -25,12 +22,25 @@
   (memoize
     #(.getDocument (.getSession (ace-editor)))))
 
-(defn ace-selected-range []
-  "Grab the selected range from Ace (note: ace must be rendered)"
-  (let [selection-obj (.getSelectionRange (ace-editor))
-        start-sel (.-start selection-obj)
-        end-sel (.-end selection-obj)]
-    [(.-row start-sel) (.-column start-sel) (.-row end-sel) (.-column end-sel)]))
+(defonce ace-range-constructor
+  (.-Range (.require js/ace "ace/range")))
+
+(defn index->js-position [index]
+  "Converts a string index to an ace {row, column} js object"
+  (.indexToPosition (ace-document) index))
+
+(defn index->vec-position [index]
+  (let [js-position (index->js-position index)]
+    [(.-row js-position) (.-column js-position)]))
+
+(defn js-position->index [js-position]
+  "Converts an ace {row, column} js object to a string index??"
+  (.positionToIndex (ace-document) js-position))
+
+(defn ace-selected-index-range []
+  "Grab the selected range in terms of [start-index end-index] (note: ace must be rendered)"
+  (let [selection-obj (.getSelectionRange (ace-editor))]
+    (map js-position->index [(.-start selection-obj) (.-end selection-obj)])))
 
 (defn get-watch-marker-ids []
   "Get a list of watch markers from the Ace getMarkers non-Array"
@@ -50,38 +60,24 @@
 (defn create-anchor [row column]
   (.createAnchor (ace-document) row column))
 
-(defn anchors->range [start-anchor end-anchor]
+(defn anchors->ace-range [start-anchor end-anchor]
   (let [range (ace-range-constructor.)]
     (set! (.-start range) start-anchor)
     (set! (.-end range) end-anchor)
     range))
 
-(defn render-watch-marker [[start-row start-col end-row end-col]]
+(defn render-watch-marker [[start-index end-index]]
   "Clears and redraws marker (note: ace must be rendered)"
-  (let [start-anchor (create-anchor start-row start-col)
-        end-anchor (create-anchor end-row end-col)
-        range (anchors->range start-anchor end-anchor)]
+  (let [start-anchor (apply create-anchor (index->vec-position start-index))
+        end-anchor (apply create-anchor (index->vec-position end-index))
+        range (anchors->ace-range start-anchor end-anchor)]
     (remove-watch-markers)
-    (.addMarker (ace-session) range "watch-marker" "text")
-    (pprint
-      (.positionToIndex (ace-document)
-        (clj->js {:row start-row :column start-col})))))
-
-;;
-;; TODO: Code stuff should probably be elsewhere with eval in the code module?
-;;
-;; HA! Use ed.sessions.doc.positionToIndex({row, column})
-;; If this works, we may want to store the watch marker this way and translate back and forth.
-;; So core will have the text-based knowledge and the editor will have the marker and position nonsense.
-
-
-
+    (.addMarker (ace-session) range "watch-marker" "text")))
 
 (defn editor [mode content watch-range]
   "React wrapper for Ace"
-  (let [on-change    #(reset! content %)
-        on-set-watch #(reset! watch-range %)
-        set-watch-on-selection #(on-set-watch (ace-selected-range)) ]
+  (let [on-change #(reset! content %)
+        set-watch-on-selection #(reset! watch-range (ace-selected-index-range)) ]
 
     (r/create-class
       {:component-did-mount

@@ -20,7 +20,7 @@ const graduates = cats.map(school);
 println(graduates.join(\", \"));
 "))
 
-(defonce watch-range (r/atom [8 8 8 28]))
+(defonce watch-range (r/atom [181 201]))
 
 (defonce slide-md (r/atom "
 # Markdown Text Here

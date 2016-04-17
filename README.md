@@ -5,8 +5,10 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 ## TODO
 
 - Watching
-  - Add __watch__(uid, code) wrappers
-  - Watches list in console area (maybe console stack?)
+  - watch-range should update on change
+  - Use js splice to insert the wrapper
+  - Watch displays in console area, constantly updates
+  - Run/watch tabs?
 - Termination and errors
   - Terminate any existing running workers on run, set/reset a terminate timer
   - Improve editor integration (with errors, etc)
