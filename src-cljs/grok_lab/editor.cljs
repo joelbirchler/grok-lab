@@ -54,8 +54,11 @@
     (get-markers))))
 
 (defn get-watch-index-range []
-  (let [range (:range (get-watch-marker))]
-    (map js-position->index [(.-start range) (.-end range)])))
+  (let [range (:range (get-watch-marker))
+        index-range (map js-position->index [(.-start range) (.-end range)])]
+    (if (apply = index-range)
+      nil
+      index-range)))
 
 (defn create-anchor [row column]
   (.createAnchor (ace-document) row column))
@@ -71,15 +74,18 @@
   (let [start-anchor (apply create-anchor (index->vec-position start-index))
         end-anchor (apply create-anchor (index->vec-position end-index))
         range (anchors->ace-range start-anchor end-anchor)]
-    (.removeMarker (ace-session) (:id (get-watch-marker)))
-    (.addMarker (ace-session) range "watch-marker" "text")))
+      (.removeMarker (ace-session) (:id (get-watch-marker)))
+      (.addMarker (ace-session) range "watch-marker" "text")))
 
-(defn editor [mode content watch-range]
+(defn editor [mode code watch-range change-handler]
   "React wrapper for Ace"
-  (let [on-change (fn [updated-content]
-          (reset! watch-range (get-watch-index-range))
-          (reset! content updated-content))
-        set-watch-on-selection #(reset! watch-range (ace-selected-index-range)) ]
+  (let [on-change (fn []
+          (reset! code (.getValue (ace-editor))
+          (reset! watch-range (get-watch-index-range))))
+        on-set-watch (fn []
+          (reset! watch-range (ace-selected-index-range))
+          (.clearSelection (ace-editor))
+          (render-watch-marker @watch-range))]
 
     (r/create-class
       {:component-did-mount
@@ -87,28 +93,23 @@
        (doto (ace-editor)
          (aset "$blockScrolling" js/Infinity) ; hides deprecation warning
          (.setTheme "ace/theme/tomorrow_night")
-         (.setValue @content -1))
+         (.setValue @code -1))
 
        (doto (ace-session)
-         (.on "change" #(on-change (.getValue (ace-editor))))
+         (.on "change" on-change)
          (.setMode "ace/mode/javascript"))
 
        (doto (.-commands (ace-editor))
          (.addCommand (clj->js {
            :name "setWatchOnSelection"
            :bindKey {:win "Ctrl-w" :mac "Ctrl-w"}
-           :exec set-watch-on-selection})))
+           :exec on-set-watch})))
 
        (render-watch-marker @watch-range))
 
-      :component-did-update
-      (fn [this old-props old-children]
-        (render-watch-marker @watch-range))
-
       :reagent-render
-      (fn [mode content watch-range]
-        (do
-          (deref watch-range) ; hacking non-React into React -- deref forces rerender on change
-          [:div.stack-2-3
-            [:button.watch-button {:type "submit" :on-click set-watch-on-selection} "Watch"]
-            [:div#editor]]))})))
+      (fn [mode code watch-range change-handler]
+        [:div.stack-2-3
+          [:button.watch-button {:type "submit" :on-click on-set-watch} "Watch"]
+          [:div#editor]])
+      })))

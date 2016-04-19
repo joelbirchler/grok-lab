@@ -1,8 +1,11 @@
 (ns grok_lab.core
   (:require [reagent.core :as r]
+            [cljs.pprint :refer [pprint]]
             [grok_lab.editor :as editor :refer [editor]]
             [grok_lab.slide :refer [slide]]
             [grok_lab.eval :as eval]))
+
+(enable-console-print!)
 
 ;;
 ;; TODO: We're going to move this data to a db. Ignore the mess for now.
@@ -41,8 +44,19 @@ Probably want a better description of map and parallelization here.
 (defn on-error [{message :message line :line col :col}]
   (on-log (str "ERROR! " message " at line " line " column " col)))
 
+(defn on-editor-change []
+  (pprint (str "on-change... is there a delay? " @watch-range)))
+
 (defn run-code []
   (eval/run @code on-log on-error))
+
+(defn instrumented [code [watch-start watch-end]] ;; Temporary name and place while we are playing
+  (str
+    (.slice code 0 watch-start)
+    "|"
+    (.slice code watch-start watch-end)
+    "|"
+    (.slice code watch-end)))
 
 (defn grok-pad []
   [:main
@@ -50,7 +64,7 @@ Probably want a better description of map and parallelization here.
       [slide @slide-md]]
 
     [:div.right-pane
-      [editor :javascript code watch-range]
+      [editor :javascript code watch-range on-editor-change]
       [:div#console.stack-1-3
         [:button {:type "submit" :on-click run-code} "Run"]
         [:pre (clojure.string/join "\n" @log)]]]])
