@@ -5,13 +5,12 @@
 const __grok_watch__ = function(result) { println(result); return result; };")
 
 (defn instrument-code [code [watch-start watch-end]]
-  (str
-    bootstrap
-    (.slice code 0 watch-start)
-    "__grok_watch__("
-    (.slice code watch-start watch-end)
-    ")"
-    (.slice code watch-end)))
+  (if (= watch-start watch-end)
+    (str bootstrap code)
+    (let [pre-watched  (.slice code 0 watch-start)
+          watched      (.slice code watch-start watch-end)
+          post-watched (.slice code watch-end)]
+      (str bootstrap pre-watched "__grok_watch__(" watched ")" post-watched))))
 
 (defn create-eval-worker [code]
   (let [blob (js/Blob. (array code) {:type "application/javascript"})

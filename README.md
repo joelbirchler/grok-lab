@@ -5,9 +5,9 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 ## TODO
 
 - Watching
-  - Protect against instrument blanks with watches
   - Debounce runs
   - Watch results should appear in blue (wrap with span and class)
+  - Attempt some output sanitization
 - defn-
 - Termination and errors
   - Terminate any existing running workers on run, set/reset a terminate timer
