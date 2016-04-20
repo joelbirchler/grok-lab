@@ -1,8 +1,7 @@
 (ns grok_lab.eval)
 
 (def bootstrap
-"const println = postMessage;
-const __grok_watch__ = function(result) { println(result); return result; };")
+  "const __grok_watch__ = function(result) { postMessage(result); return result; };\n")
 
 (defn instrument-code [code [watch-start watch-end]]
   (if (= watch-start watch-end)
@@ -24,4 +23,4 @@ const __grok_watch__ = function(result) { println(result); return result; };")
     (set! (.-onerror worker)
       (fn [event]
         (.preventDefault event)
-        (error-handler {:message (.-message event) :line (.-lineno event) :col (.-colno event)})))))
+        (error-handler {:message (.-message event) :line (dec (.-lineno event)) :col (.-colno event)})))))

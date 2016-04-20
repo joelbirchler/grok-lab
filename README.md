@@ -6,12 +6,9 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 
 - Watching
   - Debounce runs
-  - Watch results should appear in blue (wrap with span and class)
-  - Attempt some output sanitization
 - defn-
 - Termination and errors
   - Terminate any existing running workers on run, set/reset a terminate timer
-  - Improve editor integration (with errors, etc)
 - Load lodash by default
 
 

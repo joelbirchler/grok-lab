@@ -18,10 +18,7 @@
 
 const school = (str) => `Dr. ${str}`;
 
-cats.map(school).join(\", \");
-
-println(\"Done!\");
-"))
+cats.map(school).join(\", \");"))
 
 (defonce watch-range (r/atom [136 163]))
 
