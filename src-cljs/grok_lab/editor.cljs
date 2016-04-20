@@ -80,12 +80,14 @@
 (defn editor [mode code watch-range change-handler]
   "React wrapper for Ace"
   (let [on-change (fn []
-          (reset! code (.getValue (ace-editor))
-          (reset! watch-range (get-watch-index-range))))
+          (reset! code (.getValue (ace-editor)))
+          (reset! watch-range (get-watch-index-range))
+          (change-handler))
         on-set-watch (fn []
           (reset! watch-range (ace-selected-index-range))
           (.clearSelection (ace-editor))
-          (render-watch-marker @watch-range))]
+          (render-watch-marker @watch-range)
+          (change-handler))]
 
     (r/create-class
       {:component-did-mount

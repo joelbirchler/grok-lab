@@ -18,12 +18,12 @@
 
 const school = (str) => `Dr. ${str}`;
 
-const graduates = cats.map(school);
+cats.map(school).join(\", \");
 
-println(graduates.join(\", \"));
+println(\"Done!\");
 "))
 
-(defonce watch-range (r/atom [181 201]))
+(defonce watch-range (r/atom [136 163]))
 
 (defonce slide-md (r/atom "
 # Markdown Text Here
@@ -44,19 +44,14 @@ Probably want a better description of map and parallelization here.
 (defn on-error [{message :message line :line col :col}]
   (on-log (str "ERROR! " message " at line " line " column " col)))
 
-(defn on-editor-change []
-  (pprint (str "on-change... is there a delay? " @watch-range)))
-
 (defn run-code []
-  (eval/run @code on-log on-error))
+  (reset! log '())
+  (eval/run
+    (eval/instrument-code @code @watch-range)
+    on-log on-error))
 
-(defn instrumented [code [watch-start watch-end]] ;; Temporary name and place while we are playing
-  (str
-    (.slice code 0 watch-start)
-    "|"
-    (.slice code watch-start watch-end)
-    "|"
-    (.slice code watch-end)))
+(defn on-editor-change []
+  (run-code))
 
 (defn grok-pad []
   [:main
@@ -66,7 +61,6 @@ Probably want a better description of map and parallelization here.
     [:div.right-pane
       [editor :javascript code watch-range on-editor-change]
       [:div#console.stack-1-3
-        [:button {:type "submit" :on-click run-code} "Run"]
         [:pre (clojure.string/join "\n" @log)]]]])
 
 (defn ^:export main []

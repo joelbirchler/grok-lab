@@ -1,14 +1,20 @@
 (ns grok_lab.eval)
 
+(def bootstrap
+"const println = postMessage;
+const __grok_watch__ = function(result) { println(result); return result; };")
 
-(defn bootstrapped-code [code]
+(defn instrument-code [code [watch-start watch-end]]
   (str
-    "const println = postMessage;"
-    "const __grok_watch__ = function(result) { println(result); return result; };"
-    code))
+    bootstrap
+    (.slice code 0 watch-start)
+    "__grok_watch__("
+    (.slice code watch-start watch-end)
+    ")"
+    (.slice code watch-end)))
 
 (defn create-eval-worker [code]
-  (let [blob (js/Blob. (array (bootstrapped-code code)) {:type "application/javascript"})
+  (let [blob (js/Blob. (array code) {:type "application/javascript"})
         obj-url (.createObjectURL js/URL blob)]
     (js/Worker. obj-url)))
 

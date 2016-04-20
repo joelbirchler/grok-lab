@@ -5,10 +5,9 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 ## TODO
 
 - Watching
-  - Use js splice (watch out for mutation) to instrument the code
   - Protect against instrument blanks with watches
-  - Watch displays in console area, constantly updates
-  - Run/watch tabs?
+  - Debounce runs
+  - Watch results should appear in blue (wrap with span and class)
 - defn-
 - Termination and errors
   - Terminate any existing running workers on run, set/reset a terminate timer
