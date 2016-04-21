@@ -14,7 +14,7 @@
     (let [pre-watched  (.slice code 0 watch-start)
           watched      (groom-watched (.slice code watch-start watch-end))
           post-watched (.slice code watch-end)]
-      (str bootstrap pre-watched "__grok_watch__(" watched ")" post-watched))))
+      (str bootstrap pre-watched "__grok_watch__(" watched ")" post-watched "; close();"))))
 
 (defn- create-eval-worker [code]
   (let [blob (js/Blob. (array code) {:type "application/javascript"})
@@ -23,6 +23,7 @@
 
 (defn run [code log-handler error-handler]
   (let [worker (create-eval-worker code)]
+    (js/setTimeout #(.terminate worker) 2000)
     (set! (.-onmessage worker)
       #(log-handler (.-data %)))
     (set! (.-onerror worker)
