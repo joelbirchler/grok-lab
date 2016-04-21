@@ -4,7 +4,9 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 
 ## TODO
 
-- Load lodash by default
+- importScripts defined in core
+- pads index and creating
+- pads have many slides
 
 
 ## Building

@@ -2,7 +2,10 @@
   (:require [clojure.string :refer [trim replace]]))
 
 (def bootstrap
-  "const __grok_watch__ = function(result) { postMessage(JSON.stringify(result)); return result; };\n")
+  "importScripts('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.1/lodash.min.js');
+  const __grok_watch__ = function(result) {
+     postMessage(JSON.stringify(result)); return result;
+  };\n")
 
 (defn- groom-watched [code]
   "Language-dependent removes whitespace and weird endings"
