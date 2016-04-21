@@ -33,21 +33,20 @@ uneducated cat intact and blissfully unaware of science and philosophy.
 Probably want a better description of map and parallelization here.
 "))
 
-(defonce log (r/atom '()))
+(defonce log (r/atom ""))
 
-(defn on-log [value]
-  (swap! log conj value))
+(defn- on-log [value]
+  (reset! log value))
 
-(defn on-error [{message :message line :line col :col}]
+(defn- on-error [{message :message line :line col :col}]
   (on-log (str "ERROR! " message " at line " line " column " col)))
 
-(defn run-code []
-  (reset! log '())
+(defn- run-code []
   (eval/run
     (eval/instrument-code @code @watch-range)
     on-log on-error))
 
-(defn on-editor-change []
+(defn- on-editor-change []
   (run-code))
 
 (defn grok-pad []
@@ -58,7 +57,7 @@ Probably want a better description of map and parallelization here.
     [:div.right-pane
       [editor :javascript code watch-range on-editor-change]
       [:div#console.stack-1-3
-        [:pre (clojure.string/join "\n" @log)]]]])
+        [:pre @log]]]])
 
 (defn ^:export main []
   (r/render [grok-pad]

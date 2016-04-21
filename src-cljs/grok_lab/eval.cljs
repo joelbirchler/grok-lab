@@ -1,17 +1,22 @@
-(ns grok_lab.eval)
+(ns grok_lab.eval
+  (:require [clojure.string :refer [trim replace]]))
 
 (def bootstrap
-  "const __grok_watch__ = function(result) { postMessage(result); return result; };\n")
+  "const __grok_watch__ = function(result) { postMessage(JSON.stringify(result)); return result; };\n")
 
-(defn instrument-code [code [watch-start watch-end]]
+(defn- groom-watched [code]
+  "Language-dependent removes whitespace and weird endings"
+  (replace (trim code) #";$" ""))
+
+(defn- instrument-code [code [watch-start watch-end]]
   (if (= watch-start watch-end)
-    (str bootstrap code)
+    code
     (let [pre-watched  (.slice code 0 watch-start)
-          watched      (.slice code watch-start watch-end)
+          watched      (groom-watched (.slice code watch-start watch-end))
           post-watched (.slice code watch-end)]
       (str bootstrap pre-watched "__grok_watch__(" watched ")" post-watched))))
 
-(defn create-eval-worker [code]
+(defn- create-eval-worker [code]
   (let [blob (js/Blob. (array code) {:type "application/javascript"})
         obj-url (.createObjectURL js/URL blob)]
     (js/Worker. obj-url)))

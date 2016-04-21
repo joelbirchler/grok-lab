@@ -35,7 +35,11 @@ main {
 .watch-button {
   position: absolute;
   right: 0;
+  bottom: 0;
   z-index: 300;
+  background-color: black;
+  color: white;
+  border: 1px solid #ccc;
 }
 
 #editor {
@@ -54,6 +58,7 @@ main {
 
 #console {
   font-family: 'PT Sans', sans-serif;
+  font-size: 22px;
   background-color: #343436;
   border-top: 1px solid #444;
   color: #ccc;
