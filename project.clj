@@ -8,6 +8,7 @@
                  [reagent "0.6.0-alpha"]
                  [compojure "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
+                 [ring/ring-json "0.4.0"]
                  [hiccup "1.0.5"]]
   :plugins [[lein-ring "0.9.7"]
             [lein-cljsbuild "1.1.3"]]

@@ -4,9 +4,16 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 
 ## TODO
 
+- json api
+  - fetch
+  - csrf?
 - importScripts defined in core
-- pads index and creating
-- pads have many slides
+- docker-compose
+- sql crud
+  - https://github.com/yogthos/migratus
+  - https://github.com/krisajenkins/yesql
+  - pads index and creating
+  - pads have many slides
 
 
 ## Building
