@@ -1,13 +1,12 @@
-(ns hello-compojure.handler-test
+(ns grok-lab.routes-test
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
-            [hello-compojure.handler :refer :all]))
+            [grok-lab.routes :refer :all]))
 
 (deftest test-app
   (testing "main route"
     (let [response (app (mock/request :get "/"))]
-      (is (= (:status response) 200))
-      (is (= (:body response) "Hello World"))))
+      (is (= (:status response) 200))))
 
   (testing "not-found route"
     (let [response (app (mock/request :get "/invalid"))]
