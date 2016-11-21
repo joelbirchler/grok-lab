@@ -1,0 +1,12 @@
+version: '2'
+services:
+  web:
+    image: grok-lab-web
+    ports:
+      - "80:80"
+    links:
+      - app
+  app:
+    image: grok-lab-app
+    ports:
+      - "8080:8080"

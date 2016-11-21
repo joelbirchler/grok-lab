@@ -28,8 +28,6 @@ We only want educated cats, so we're going to _map_ over all of our cats and
 _apply school_ to each one. This will give us a _new cat_, leaving the original
 uneducated cat intact and blissfully unaware of science and philosophy.
 
-![Doctor Cat Map](/images/doctor-cat-map.jpg)
-
 Probably want a better description of map and parallelization here.
 "))
 

@@ -9,12 +9,10 @@
 ;; This is just temporary while we figure out the design
 (def all-the-data
   {:text
-"# Markdown Text Here
+"# Markdown Text Here!
 We only want educated cats, so we're going to _map_ over all of our cats and
 _apply school_ to each one. This will give us a _new cat_, leaving the original
 uneducated cat intact and blissfully unaware of science and philosophy.
-
-![Doctor Cat Map](/images/doctor-cat-map.jpg)
 
 Probably want a better description of map and parallelization here."
    :code
@@ -29,11 +27,9 @@ cats.map(school).join(\", \");"
   :watch [136 163]
 })
 
-
 (defroutes app-routes
   (GET "/" [] (view/render view/index))
   (GET "/pad/1/slide/1" [] {:status 200 :body all-the-data})
-  (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app

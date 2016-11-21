@@ -1,8 +1,9 @@
+.DS_Store
 /target
 /lib
 /classes
 /checkouts
-/resources/public/compiled-js
+/web/cljs/compiled-js/
 pom.xml
 pom.xml.asc
 *.jar

@@ -4,6 +4,7 @@ Grok Lab is a learning platform for live demo and experimentation of code.
 
 ## TODO
 
+- update ring, clojure, and compojure
 - json api
   - fetch
   - csrf?
